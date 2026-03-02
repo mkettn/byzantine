@@ -23,23 +23,11 @@
 
 # Week of the Prodigal Son (10 weeks before Easter - no fasting)
 - "e-70d..e-64d":
-    mon: no_fast
-    tue: no_fast
-    wed: no_fast
-    thu: no_fast
-    fri: no_fast
-    sat: no_fast
-    sun: no_fast
+    mon..sun: no_fast
 
 # Meatfare week (8 weeks before Easter - no meat)
 - "e-56d..e-50d":
-    mon: no_meat
-    tue: no_meat
-    wed: no_meat
-    thu: no_meat
-    fri: no_meat
-    sat: no_meat
-    sun: no_meat
+    mon..sun: no_meat
 
 # Great Lent (7 weeks before Easter to day before Easter)
 - "e-49d..e-2d":
@@ -56,13 +44,7 @@
 
 # Bright Week (Easter week - no fasting)
 - "e..e+6d":
-    mon: no_fast
-    tue: no_fast
-    wed: no_fast
-    thu: no_fast
-    fri: no_fast
-    sat: no_fast
-    sun: no_fast
+    mon..sun: no_fast
 
 # Week after Easter to Pentecost (Wed/Fri no fish)
 - "e+7d..e+49d":
@@ -71,13 +53,7 @@
 
 # Pentecost week (no fasting)
 - "e+49d..e+55d":
-    mon: no_fast
-    tue: no_fast
-    wed: no_fast
-    thu: no_fast
-    fri: no_fast
-    sat: no_fast
-    sun: no_fast
+    mon..sun: no_fast
 
 # Apostles Fast (Monday after Pentecost to June 29)
 - "e+50d..0629":

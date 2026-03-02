@@ -66,7 +66,48 @@ class FastingCalendar:
                 while current <= end_date:
                     wd = current.weekday()
                     wd_name = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][wd]
-                    if wd_name in rules:
-                        result.append((current, {wd_name: rules[wd_name]}))
+                    expanded_rules = self._expand_weekday_rules(rules)
+                    if wd_name in expanded_rules:
+                        result.append((current, {wd_name: expanded_rules[wd_name]}))
                     current = __import__("datetime").timedelta(days=1) + current
         return result
+
+    def _expand_weekday_rules(self, rules: dict) -> dict:
+        """Expand weekday range rules like 'mon..sun' to individual days."""
+        if not isinstance(rules, dict):
+            return rules
+        ABBR2NUM = {
+            "mon": 0,
+            "tue": 1,
+            "wed": 2,
+            "thu": 3,
+            "fri": 4,
+            "sat": 5,
+            "sun": 6,
+        }
+        expanded = {}
+        for key, value in rules.items():
+            if ".." in key:
+                start_wd, end_wd = key.split("..")
+                start_num = ABBR2NUM[start_wd.lower()]
+                end_num = ABBR2NUM[end_wd.lower()]
+                if start_num <= end_num:
+                    for i in range(start_num, end_num + 1):
+                        for wd_name, wd_num in ABBR2NUM.items():
+                            if wd_num == i:
+                                expanded[wd_name] = value
+                                break
+                else:
+                    for i in range(start_num, 7):
+                        for wd_name, wd_num in ABBR2NUM.items():
+                            if wd_num == i:
+                                expanded[wd_name] = value
+                                break
+                    for i in range(0, end_num + 1):
+                        for wd_name, wd_num in ABBR2NUM.items():
+                            if wd_num == i:
+                                expanded[wd_name] = value
+                                break
+            else:
+                expanded[key] = value
+        return expanded
