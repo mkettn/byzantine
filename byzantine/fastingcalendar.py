@@ -63,70 +63,50 @@ class FastingCalendar:
         julian_offset = timedelta(days=13) if old_style else timedelta(days=0)
 
         calendar = {}
-        for entry in self._entries:
-            entry_type = entry[0]
-            if entry_type == "fixed":
-                _, day, value, is_easter = entry
-                dt = day.get(year)
-                if not is_easter and old_style:
-                    dt += julian_offset
-                if isinstance(value, dict) and "rule" in value:
-                    if dt.month == 12 and dt.day == 25 and old_style:
-                        pass
-                    else:
-                        calendar[dt] = value
-                else:
-                    calendar[dt] = value
-            else:
-                _, start, end, rules, is_easter = entry
-                start_date = start.get(year)
-                end_date = end.get(year)
-                if not is_easter and old_style:
-                    start_date += julian_offset
-                    end_date += julian_offset
-                current = start_date
-                while current <= end_date:
-                    if old_style and current.month == 12 and current.day == 25:
-                        current += timedelta(days=1)
-                        continue
-                    wd = current.weekday()
-                    wd_name = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][wd]
-                    expanded_rules = self._expand_weekday_rules(rules)
-                    if wd_name in expanded_rules:
-                        rule_value = {wd_name: expanded_rules[wd_name]}
-                        if current in calendar and isinstance(calendar[current], dict):
-                            calendar[current].update(rule_value)
-                        else:
-                            calendar[current] = rule_value
-                    current += timedelta(days=1)
 
+        years_to_process = [year]
         if old_style:
-            self._add_old_style_christmas_fast(calendar, year)
+            years_to_process.append(year - 1)
+
+        for yr in years_to_process:
+            for entry in self._entries:
+                entry_type = entry[0]
+                if entry_type == "fixed":
+                    _, day, value, is_easter = entry
+                    dt = day.get(yr)
+                    if not is_easter and old_style:
+                        dt += julian_offset
+                    if dt.year == year:
+                        if isinstance(value, dict) and "rule" in value:
+                            calendar[dt] = value
+                        else:
+                            calendar[dt] = value
+                else:
+                    _, start, end, rules, is_easter = entry
+                    start_date = start.get(yr)
+                    end_date = end.get(yr)
+                    if not is_easter and old_style:
+                        start_date += julian_offset
+                        end_date += julian_offset
+                    current = start_date
+                    while current <= end_date:
+                        if current.year == year:
+                            wd = current.weekday()
+                            wd_name = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][
+                                wd
+                            ]
+                            expanded_rules = self._expand_weekday_rules(rules)
+                            if wd_name in expanded_rules:
+                                rule_value = {wd_name: expanded_rules[wd_name]}
+                                if current in calendar and isinstance(
+                                    calendar[current], dict
+                                ):
+                                    calendar[current].update(rule_value)
+                                else:
+                                    calendar[current] = rule_value
+                        current += timedelta(days=1)
 
         return [(dt, value) for dt, value in sorted(calendar.items())]
-
-    def _add_old_style_christmas_fast(self, calendar: dict, year: int):
-        """Add Christmas fast days from previous year (Dec 25 + 13 days offset)."""
-        from datetime import timedelta, date
-
-        julian_christmas = date(year - 1, 12, 25) + timedelta(days=13)
-        first_day_of_year = date(year, 1, 1)
-
-        current = first_day_of_year
-        while current <= julian_christmas:
-            if current.month == 1 and current.day == 7:
-                current += timedelta(days=1)
-                continue
-            if current.weekday() in [0, 2, 4]:
-                calendar[current] = {"mon": "no_oil", "wed": "no_oil", "fri": "no_oil"}
-            else:
-                calendar[current] = {
-                    "tue": "no_fish",
-                    "thu": "no_fish",
-                    "sat": "no_dairy",
-                    "sun": "no_dairy",
-                }
-            current += timedelta(days=1)
 
     def _expand_weekday_rules(self, rules: dict) -> dict:
         """Expand weekday range rules like 'mon..sun' to individual days."""
