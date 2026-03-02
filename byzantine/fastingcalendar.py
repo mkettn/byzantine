@@ -94,7 +94,30 @@ class FastingCalendar:
                             calendar[current] = rule_value
                     current += timedelta(days=1)
 
+        if old_style:
+            self._add_old_style_christmas_fast(calendar, year)
+
         return [(dt, value) for dt, value in sorted(calendar.items())]
+
+    def _add_old_style_christmas_fast(self, calendar: dict, year: int):
+        """Add Christmas fast days from previous year (Dec 25 + 13 days offset)."""
+        from datetime import timedelta, date
+
+        julian_christmas = date(year - 1, 12, 25) + timedelta(days=13)
+        first_day_of_year = date(year, 1, 1)
+
+        current = first_day_of_year
+        while current <= julian_christmas:
+            if current.weekday() in [0, 2, 4]:
+                calendar[current] = {"mon": "no_oil", "wed": "no_oil", "fri": "no_oil"}
+            else:
+                calendar[current] = {
+                    "tue": "no_fish",
+                    "thu": "no_fish",
+                    "sat": "no_dairy",
+                    "sun": "no_dairy",
+                }
+            current += timedelta(days=1)
 
     def _expand_weekday_rules(self, rules: dict) -> dict:
         """Expand weekday range rules like 'mon..sun' to individual days."""
@@ -139,6 +162,21 @@ class FastingCalendar:
                 expanded[key] = value
         return expanded
 
+    def _load_translation(self, lang: str = "de") -> dict:
+        """Load translation file."""
+        import yaml
+        import importlib.resources
+
+        try:
+            with (
+                importlib.resources.files("byzantine.data.lang")
+                .joinpath(f"{lang}.yml")
+                .open()
+            ) as f:
+                return yaml.safe_load(f)
+        except Exception:
+            return self._load_translation("de")
+
     def to_html(
         self,
         year: int | None = None,
@@ -147,20 +185,33 @@ class FastingCalendar:
         weekdays: list | None = None,
         months: list | None = None,
         inline_css: bool = True,
+        show_legend: bool = True,
+        lang: str = "de",
     ) -> str:
         """Generate HTML calendar output.
 
         Args:
             year: Year to generate calendar for. Defaults to current year.
             old_style: If True, use Julian calendar (13-day offset).
-            title: Title for the calendar.
-            weekdays: List of weekday abbreviations. Defaults to German [SO, MO, DI, ...].
-            months: List of month names. Defaults to German [Januar, Februar, ...].
+            title: Title for the calendar (overrides translation).
+            weekdays: List of weekday abbreviations. Defaults to translation.
+            months: List of month names. Defaults to translation.
             inline_css: If True, embed CSS inline. If False, reference style.css.
+            show_legend: If True, include legend showing color codes.
+            lang: Language code for translations (e.g., "de", "en").
 
         Returns:
             HTML string with monthly calendar tables.
         """
+        translation = self._load_translation(lang)
+
+        if not title:
+            title = translation.get("title", "Fasting Calendar")
+            if old_style and len(translation.get("style", [])) > 0:
+                title += f" {translation['style'][0]}"
+            elif len(translation.get("style", [])) > 1:
+                title += f" {translation['style'][1]}"
+
         from datetime import date, timedelta
         from calendar import monthrange
         import importlib.resources
@@ -169,22 +220,27 @@ class FastingCalendar:
             year = date.today().year
 
         if weekdays is None:
-            weekdays = ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
+            weekdays = translation.get(
+                "weekdays", ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
+            )
         if months is None:
-            months = [
-                "Januar",
-                "Februar",
-                "Marz",
-                "April",
-                "Mai",
-                "Juni",
-                "Juli",
-                "August",
-                "September",
-                "Oktober",
-                "November",
-                "Dezember",
-            ]
+            months = translation.get(
+                "months",
+                [
+                    "Januar",
+                    "Februar",
+                    "Marz",
+                    "April",
+                    "Mai",
+                    "Juni",
+                    "Juli",
+                    "August",
+                    "September",
+                    "Oktober",
+                    "November",
+                    "Dezember",
+                ],
+            )
 
         fastdays = dict(self.get(year, old_style))
 
@@ -238,6 +294,27 @@ class FastingCalendar:
                 curr_day += timedelta(days=1)
 
             html += "</table></div>"
+
+        if show_legend:
+            levels = translation.get("levels", [])
+            html += '<div class="legend">'
+            if len(levels) > 1:
+                html += (
+                    f'<div><div class="lc no_meat"></div><div>{levels[1]}</div></div>'
+                )
+            if len(levels) > 2:
+                html += (
+                    f'<div><div class="lc no_dairy"></div><div>{levels[2]}</div></div>'
+                )
+            if len(levels) > 3:
+                html += (
+                    f'<div><div class="lc no_fish"></div><div>{levels[3]}</div></div>'
+                )
+            if len(levels) > 4:
+                html += (
+                    f'<div><div class="lc no_oil"></div><div>{levels[4]}</div></div>'
+                )
+            html += "</div>"
 
         html += "</div></body></html>"
         return html

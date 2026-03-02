@@ -1,0 +1,22 @@
+title: Fastenkalender
+style: ["alter Stil", "neuer Stil"]
+weekdays: [SO, MO, DI, MI, DO, FR, SA]
+months:
+  - Januar
+  - Februar
+  - März
+  - April
+  - Mai
+  - Juni
+  - Juli
+  - August
+  - September
+  - Oktober
+  - November
+  - Dezember
+levels:
+  - kein Fasten
+  - kein Fleisch
+  - keine Milchprodukte oder Eier
+  - kein Fisch
+  - kein Öl oder Wein

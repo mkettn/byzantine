@@ -1,0 +1,22 @@
+title: Fasting calendar
+style: ["old style", "new style"]
+weekdays: [SU, MO, TU, WE, TH, FR, SA]
+months:
+  - January
+  - February
+  - March
+  - April
+  - May
+  - June
+  - July
+  - August
+  - September
+  - October
+  - November
+  - December
+levels:
+  - No Fast
+  - No Meat
+  - No Dairy or Eggs
+  - No Fish
+  - No Oil or Wine

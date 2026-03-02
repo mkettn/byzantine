@@ -51,12 +51,9 @@
     mon..sun: no_meat
 
 # Great Lent (7 weeks before Easter to day before Easter)
-- "e-49d..e-2d":
+- "e-49d..e":
     mon..fri: no_oil
     sat..sun: no_fish
-
-# Holy Friday (day before Easter)
-- "e-2d": no_oil
 
 # Bright Week (Easter week - no fasting)
 - "e..e+6d":
