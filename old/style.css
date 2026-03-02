@@ -1,0 +1,82 @@
+html {
+    justify-content: center;
+    display: flex;
+}
+
+h1 {
+    text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+/* add .noprint class to hide elements for printing */
+@media print {
+    .noprint {
+        display: none;
+    }
+    body{
+        print-color-adjust:exact !important;
+    }
+}
+
+.month {
+    border-spacing: 0px;
+    border-collapse: collapse;
+    margin: 2pt;
+}
+
+.month td {
+    border: 1pt solid black;
+    height: 3ex;
+    width: 3ex;
+    text-align: right;
+    margin: 0;
+}
+
+.month th {
+        border: 1pt solid black;
+}
+
+.empty {
+    background-color: lightgray;
+}
+/*
+.f0 {
+    background-color: yellow;
+}
+    */
+
+.f1 {
+    background-color: orange;
+}
+
+.f2 {
+    background-color:lightblue;
+}
+
+.f3 {
+    background-color:orchid;
+}
+
+.f4 {
+    background-color: red;
+}
+
+.legend {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+.legend div {
+    margin: 1ex;
+}
+.lc {
+  float: left;
+    clear: both;
+  height: 1em;
+  width: 1em;
+  margin-right: 2pt;
+  border: 1pt solid black;
+}
