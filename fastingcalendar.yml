@@ -1,11 +1,8 @@
-# Fixed feast days (name only, no fasting rule)
-- "1225": Christmas
+# Fixed feast days with fasting rules
 - "e": Easter Sunday
 - "e+39": Ascension
 - "e+50": Pentecost (Holy Spirit)
 - "0106": Theophany
-
-# Fixed feast days with fasting rules
 - "0325":
     name: Annunciation
     rule: no_fish
@@ -84,3 +81,8 @@
     thu: no_oil
     wed, fri: no_fish
     sat..sun: no_dairy
+
+# Christmas Day - no fasting
+- "1225":
+    name: Christmas
+    rule: no_fast

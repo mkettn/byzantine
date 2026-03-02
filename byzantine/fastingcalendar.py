@@ -162,7 +162,7 @@ class FastingCalendar:
                 expanded[key] = value
         return expanded
 
-    def _load_translation(self, lang: str = "de") -> dict:
+    def _load_translation(self, lang: str = "en") -> dict:
         """Load translation file."""
         import yaml
         import importlib.resources
@@ -186,7 +186,7 @@ class FastingCalendar:
         months: list | None = None,
         inline_css: bool = True,
         show_legend: bool = True,
-        lang: str = "de",
+        lang: str = "en",
     ) -> str:
         """Generate HTML calendar output.
 
