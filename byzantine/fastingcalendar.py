@@ -34,34 +34,50 @@ class FastingCalendar:
                     start = Day(start_str)
                     end = Day(end_str)
                     rules = value
-                    self._entries.append(("range", start, end, rules))
+                    is_easter_relative = start_str.startswith(
+                        "e"
+                    ) or end_str.startswith("e")
+                    self._entries.append(
+                        ("range", start, end, rules, is_easter_relative)
+                    )
                 else:
                     day = Day(date_spec)
-                    self._entries.append(("fixed", day, value))
+                    is_easter_relative = date_spec.startswith("e")
+                    self._entries.append(("fixed", day, value, is_easter_relative))
 
-    def get(self, year: int | None = None) -> list:
+    def get(self, year: int | None = None, old_style: bool = False) -> list:
         """Get all fasting days for a given year.
 
         Args:
             year: Year to calculate dates for. Defaults to current year.
+            old_style: If True, apply 13-day Julian calendar offset to fixed dates.
 
         Returns:
             List of tuples: (date, name_or_rules)
         """
-        from datetime import date
+        from datetime import date, timedelta
 
         if year is None:
             year = date.today().year
 
+        julian_offset = timedelta(days=13) if old_style else timedelta(days=0)
+
         result = []
         for entry in self._entries:
-            if entry[0] == "fixed":
-                _, day, value = entry
-                result.append((day.get(year), value))
+            entry_type = entry[0]
+            if entry_type == "fixed":
+                _, day, value, is_easter = entry
+                dt = day.get(year)
+                if not is_easter and old_style:
+                    dt += julian_offset
+                result.append((dt, value))
             else:
-                _, start, end, rules = entry
+                _, start, end, rules, is_easter = entry
                 start_date = start.get(year)
                 end_date = end.get(year)
+                if not is_easter and old_style:
+                    start_date += julian_offset
+                    end_date += julian_offset
                 current = start_date
                 while current <= end_date:
                     wd = current.weekday()
@@ -69,7 +85,7 @@ class FastingCalendar:
                     expanded_rules = self._expand_weekday_rules(rules)
                     if wd_name in expanded_rules:
                         result.append((current, {wd_name: expanded_rules[wd_name]}))
-                    current = __import__("datetime").timedelta(days=1) + current
+                    current += timedelta(days=1)
         return result
 
     def _expand_weekday_rules(self, rules: dict) -> dict:
@@ -108,6 +124,9 @@ class FastingCalendar:
                             if wd_num == i:
                                 expanded[wd_name] = value
                                 break
+            elif "," in key:
+                for wd in key.split(","):
+                    expanded[wd.strip()] = value
             else:
                 expanded[key] = value
         return expanded

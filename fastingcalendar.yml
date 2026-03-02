@@ -4,17 +4,38 @@
 - "e+39": Ascension
 - "e+50": Pentecost (Holy Spirit)
 - "0106": Theophany
-- "0325": Annunciation
-- "0815": Dormition
-- "0908": Nativity of Theotokos
-- "0629": St Peter and Paul
-- "0829": Beheading of John Baptist
-- "0624": Nativity of John Baptist
-- "1221": Entry of Theotokos
-- "1220": Forefeast of Nativity
-- "0806": Transfiguration
-- "0914": Exaltation of Cross
-- "e-7d": Palm Sunday
+
+# Fixed feast days with fasting rules
+- "0325":
+    name: Annunciation
+    rule: no_fish
+- "0624":
+    name: Nativity of John Baptist
+    rule: no_dairy
+- "0628":
+    name: St Peter and Paul Eve
+    rule: no_dairy
+- "0806":
+    name: Transfiguration
+    rule: no_dairy
+- "0815":
+    name: Dormition
+    rule: no_dairy
+- "0829":
+    name: Beheading of John Baptist
+    rule: no_oil
+- "0914":
+    name: Exaltation of Cross
+    rule: no_fish
+- "1221":
+    name: Entry of Theotokos
+    rule: no_dairy
+- "1220":
+    name: Forefeast of Nativity
+    rule: no_dairy
+- "e-7d":
+    name: Palm Sunday
+    rule: no_dairy
 
 # Wednesday/Friday no oil (Theophany to Christmas)
 - "0106..1225":
@@ -31,13 +52,8 @@
 
 # Great Lent (7 weeks before Easter to day before Easter)
 - "e-49d..e-2d":
-    mon: no_oil
-    tue: no_oil
-    wed: no_oil
-    thu: no_oil
-    fri: no_oil
-    sat: no_fish
-    sun: no_fish
+    mon..fri: no_oil
+    sat..sun: no_fish
 
 # Holy Friday (day before Easter)
 - "e-2d": no_oil
@@ -57,30 +73,17 @@
 
 # Apostles Fast (Monday after Pentecost to June 29)
 - "e+50d..0629":
-    mon: no_oil
-    tue: no_oil
-    wed: no_oil
-    thu: no_oil
-    fri: no_oil
-    sat: no_dairy
-    sun: no_dairy
+    mon..fri: no_oil
+    sat..sun: no_dairy
 
 # Dormition Fast (2 weeks before Aug 15)
 - "0801..0815":
-    mon: no_oil
-    tue: no_oil
-    wed: no_oil
-    thu: no_oil
-    fri: no_oil
-    sat: no_fish
-    sun: no_fish
+    mon..fri: no_oil
+    sat..sun: no_fish
 
 # Christmas Fast (40 days before Dec 25)
 - "1115..1224":
-    mon: no_oil
-    tue: no_oil
-    wed: no_fish
+    mon..tue: no_oil
     thu: no_oil
-    fri: no_fish
-    sat: no_dairy
-    sun: no_dairy
+    wed, fri: no_fish
+    sat..sun: no_dairy
