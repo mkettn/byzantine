@@ -32,6 +32,16 @@ html = fc.to_html(year=2024, title="Fastenkalender 2024")
 ## CLI Usage
 
 ```bash
+fasting-calendar [options] <yaml_file>
+
+# Options:
+#   -o <output>       Output HTML file (default: stdout)
+#   -y <year>         Year to generate calendar for (default: current year)
+#   --old-style       Use Julian calendar (13-day offset)
+#   -t <title>        Calendar title [default: Fasting Calendar]
+
+# Examples:
+
 # Generate calendar for 2024
 fasting-calendar fastingcalendar.yml -y 2024 -o calendar.html
 
