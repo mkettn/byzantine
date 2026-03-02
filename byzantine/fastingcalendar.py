@@ -53,7 +53,7 @@ class FastingCalendar:
             old_style: If True, apply 13-day Julian calendar offset to fixed dates.
 
         Returns:
-            List of tuples: (date, name_or_rules)
+            List of tuples: (date, name_or_rules). Later rules override earlier ones.
         """
         from datetime import date, timedelta
 
@@ -62,7 +62,7 @@ class FastingCalendar:
 
         julian_offset = timedelta(days=13) if old_style else timedelta(days=0)
 
-        result = []
+        calendar = {}
         for entry in self._entries:
             entry_type = entry[0]
             if entry_type == "fixed":
@@ -70,7 +70,10 @@ class FastingCalendar:
                 dt = day.get(year)
                 if not is_easter and old_style:
                     dt += julian_offset
-                result.append((dt, value))
+                if isinstance(value, dict) and "rule" in value:
+                    calendar[dt] = value
+                else:
+                    calendar[dt] = value
             else:
                 _, start, end, rules, is_easter = entry
                 start_date = start.get(year)
@@ -84,9 +87,14 @@ class FastingCalendar:
                     wd_name = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][wd]
                     expanded_rules = self._expand_weekday_rules(rules)
                     if wd_name in expanded_rules:
-                        result.append((current, {wd_name: expanded_rules[wd_name]}))
+                        rule_value = {wd_name: expanded_rules[wd_name]}
+                        if current in calendar and isinstance(calendar[current], dict):
+                            calendar[current].update(rule_value)
+                        else:
+                            calendar[current] = rule_value
                     current += timedelta(days=1)
-        return result
+
+        return [(dt, value) for dt, value in sorted(calendar.items())]
 
     def _expand_weekday_rules(self, rules: dict) -> dict:
         """Expand weekday range rules like 'mon..sun' to individual days."""
