@@ -71,7 +71,10 @@ class FastingCalendar:
                 if not is_easter and old_style:
                     dt += julian_offset
                 if isinstance(value, dict) and "rule" in value:
-                    calendar[dt] = value
+                    if dt.month == 12 and dt.day == 25 and old_style:
+                        pass
+                    else:
+                        calendar[dt] = value
                 else:
                     calendar[dt] = value
             else:
@@ -83,6 +86,9 @@ class FastingCalendar:
                     end_date += julian_offset
                 current = start_date
                 while current <= end_date:
+                    if old_style and current.month == 12 and current.day == 25:
+                        current += timedelta(days=1)
+                        continue
                     wd = current.weekday()
                     wd_name = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][wd]
                     expanded_rules = self._expand_weekday_rules(rules)
@@ -108,6 +114,9 @@ class FastingCalendar:
 
         current = first_day_of_year
         while current <= julian_christmas:
+            if current.month == 1 and current.day == 7:
+                current += timedelta(days=1)
+                continue
             if current.weekday() in [0, 2, 4]:
                 calendar[current] = {"mon": "no_oil", "wed": "no_oil", "fri": "no_oil"}
             else:
