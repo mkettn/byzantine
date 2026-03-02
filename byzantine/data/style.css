@@ -43,25 +43,20 @@ h1 {
 .empty {
     background-color: lightgray;
 }
-/*
-.f0 {
-    background-color: yellow;
-}
-    */
 
-.f1 {
+.no_meat {
     background-color: orange;
 }
 
-.f2 {
-    background-color:lightblue;
+.no_dairy {
+    background-color: lightblue;
 }
 
-.f3 {
-    background-color:orchid;
+.no_fish {
+    background-color: orchid;
 }
 
-.f4 {
+.no_oil {
     background-color: red;
 }
 

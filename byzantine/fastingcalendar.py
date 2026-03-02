@@ -139,24 +139,6 @@ class FastingCalendar:
                 expanded[key] = value
         return expanded
 
-    def _rule_to_css_class(self, rule: str | dict) -> str:
-        """Convert a fasting rule to CSS class f0-f4."""
-        if isinstance(rule, str):
-            return "f0"
-        if isinstance(rule, dict):
-            values = set(rule.values())
-            if "no_fast" in values:
-                return "f0"
-            elif "no_meat" in values:
-                return "f1"
-            elif "no_dairy" in values:
-                return "f2"
-            elif "no_fish" in values:
-                return "f3"
-            elif "no_oil" in values:
-                return "f4"
-        return "f0"
-
     def to_html(
         self,
         year: int | None = None,
@@ -164,6 +146,7 @@ class FastingCalendar:
         title: str = "",
         weekdays: list | None = None,
         months: list | None = None,
+        inline_css: bool = True,
     ) -> str:
         """Generate HTML calendar output.
 
@@ -173,12 +156,14 @@ class FastingCalendar:
             title: Title for the calendar.
             weekdays: List of weekday abbreviations. Defaults to German [SO, MO, DI, ...].
             months: List of month names. Defaults to German [Januar, Februar, ...].
+            inline_css: If True, embed CSS inline. If False, reference style.css.
 
         Returns:
             HTML string with monthly calendar tables.
         """
         from datetime import date, timedelta
         from calendar import monthrange
+        import importlib.resources
 
         if year is None:
             year = date.today().year
@@ -204,7 +189,16 @@ class FastingCalendar:
         fastdays = dict(self.get(year, old_style))
 
         html = f"<!DOCTYPE html><html><head><title>{title}</title>"
-        html += '<link rel="stylesheet" type="text/css" href="style.css"/></head>'
+
+        if inline_css:
+            css_content = (
+                importlib.resources.files("byzantine.data")
+                .joinpath("style.css")
+                .read_text()
+            )
+            html += f"<style>{css_content}</style>"
+        else:
+            html += '<link rel="stylesheet" type="text/css" href="style.css"/></head>'
         html += f'<body><h1>{title}</h1><div class="grid">'
 
         for month in range(1, 13):
@@ -232,7 +226,12 @@ class FastingCalendar:
                     html += '<td class="empty"></td>'
                 else:
                     rule = fastdays.get(curr_day, {})
-                    css_class = self._rule_to_css_class(rule)
+                    if isinstance(rule, dict) and "rule" in rule:
+                        css_class = rule["rule"]
+                    elif isinstance(rule, dict) and rule:
+                        css_class = next(iter(rule.values()))
+                    else:
+                        css_class = "no_fast"
                     html += f'<td class="{css_class}">{curr_day.day}</td>'
                 if curr_day.weekday() == 5:
                     html += "</tr>"
