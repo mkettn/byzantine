@@ -1,0 +1,110 @@
+# Fixed feast days (name only, no fasting rule)
+- "1225": Christmas
+- "e": Easter Sunday
+- "e+39": Ascension
+- "e+50": Pentecost (Holy Spirit)
+- "0106": Theophany
+- "0325": Annunciation
+- "0815": Dormition
+- "0908": Nativity of Theotokos
+- "0629": St Peter and Paul
+- "0829": Beheading of John Baptist
+- "0624": Nativity of John Baptist
+- "1221": Entry of Theotokos
+- "1220": Forefeast of Nativity
+- "0806": Transfiguration
+- "0914": Exaltation of Cross
+- "e-7d": Palm Sunday
+
+# Wednesday/Friday no oil (Theophany to Christmas)
+- "0106..1225":
+    wed: no_oil
+    fri: no_oil
+
+# Week of the Prodigal Son (10 weeks before Easter - no fasting)
+- "e-70d..e-64d":
+    mon: no_fast
+    tue: no_fast
+    wed: no_fast
+    thu: no_fast
+    fri: no_fast
+    sat: no_fast
+    sun: no_fast
+
+# Meatfare week (8 weeks before Easter - no meat)
+- "e-56d..e-50d":
+    mon: no_meat
+    tue: no_meat
+    wed: no_meat
+    thu: no_meat
+    fri: no_meat
+    sat: no_meat
+    sun: no_meat
+
+# Great Lent (7 weeks before Easter to day before Easter)
+- "e-49d..e-2d":
+    mon: no_oil
+    tue: no_oil
+    wed: no_oil
+    thu: no_oil
+    fri: no_oil
+    sat: no_fish
+    sun: no_fish
+
+# Holy Friday (day before Easter)
+- "e-2d": no_oil
+
+# Bright Week (Easter week - no fasting)
+- "e..e+6d":
+    mon: no_fast
+    tue: no_fast
+    wed: no_fast
+    thu: no_fast
+    fri: no_fast
+    sat: no_fast
+    sun: no_fast
+
+# Week after Easter to Pentecost (Wed/Fri no fish)
+- "e+7d..e+49d":
+    wed: no_fish
+    fri: no_fish
+
+# Pentecost week (no fasting)
+- "e+49d..e+55d":
+    mon: no_fast
+    tue: no_fast
+    wed: no_fast
+    thu: no_fast
+    fri: no_fast
+    sat: no_fast
+    sun: no_fast
+
+# Apostles Fast (Monday after Pentecost to June 29)
+- "e+50d..0629":
+    mon: no_oil
+    tue: no_oil
+    wed: no_oil
+    thu: no_oil
+    fri: no_oil
+    sat: no_dairy
+    sun: no_dairy
+
+# Dormition Fast (2 weeks before Aug 15)
+- "0801..0815":
+    mon: no_oil
+    tue: no_oil
+    wed: no_oil
+    thu: no_oil
+    fri: no_oil
+    sat: no_fish
+    sun: no_fish
+
+# Christmas Fast (40 days before Dec 25)
+- "1115..1224":
+    mon: no_oil
+    tue: no_oil
+    wed: no_fish
+    thu: no_oil
+    fri: no_fish
+    sat: no_dairy
+    sun: no_dairy
