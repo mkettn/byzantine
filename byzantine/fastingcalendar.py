@@ -304,6 +304,8 @@ class FastingCalendar:
 
             html += "</table></div>"
 
+        html += "</div>"  # close grid
+
         if show_legend:
             levels = translation.get("levels", [])
             html += '<div class="legend">'
@@ -325,5 +327,5 @@ class FastingCalendar:
                 )
             html += "</div>"
 
-        html += "</div></body></html>"
+        html += "</body></html>"
         return html
