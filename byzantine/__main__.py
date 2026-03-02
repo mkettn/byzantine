@@ -1,61 +1,43 @@
 #!/usr/bin/env python3
-"""Command-line tool to generate HTML fasting calendar from YAML config."""
+"""Command-line tool to generate HTML fasting calendar from YAML config.
 
-import argparse
+Usage:
+    fasting-calendar [options] <yaml_file> 
+    fasting-calendar -h | --help
+
+Options:
+    -o <output>       Output HTML file (default: stdout)
+    -y <year>         Year to generate calendar for (default: current year)
+    --old-style       Use Julian calendar (13-day offset)
+    -t <title>        Calendar title [default: Fasting Calendar]
+    -h --help         Show this screen
+"""
+
 import sys
+from docopt import docopt
 from byzantine.fastingcalendar import FastingCalendar
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Generate HTML fasting calendar from YAML config"
-    )
-    parser.add_argument(
-        "yaml_file",
-        help="Path to YAML configuration file",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        help="Output HTML file (default: stdout)",
-    )
-    parser.add_argument(
-        "-y",
-        "--year",
-        type=int,
-        help="Year to generate calendar for (default: current year)",
-    )
-    parser.add_argument(
-        "--old-style",
-        action="store_true",
-        help="Use Julian calendar (13-day offset)",
-    )
-    parser.add_argument(
-        "-t",
-        "--title",
-        default="Fasting Calendar",
-        help="Calendar title",
-    )
-
-    args = parser.parse_args()
+    args = docopt(__doc__)
 
     try:
-        fc = FastingCalendar(args.yaml_file)
+        fc = FastingCalendar(args["<yaml_file>"])
         html = fc.to_html(
-            year=args.year,
-            old_style=args.old_style,
-            title=args.title,
+            year=int(args["-y"]) if args["-y"] else None,
+            old_style=args["--old-style"],
+            title=args["-t"],
         )
 
-        if args.output:
-            with open(args.output, "w") as f:
+        if args["-o"]:
+            with open(args["-o"], "w") as f:
                 f.write(html)
-            print(f"Written to {args.output}")
+            print(f"Written to {args['-o']}")
         else:
             print(html)
 
     except FileNotFoundError:
-        print(f"Error: YAML file not found: {args.yaml_file}", file=sys.stderr)
+        print(f"Error: YAML file not found: {args['<yaml_file>']}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
