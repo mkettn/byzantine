@@ -164,7 +164,7 @@ class FastingCalendar:
             ) as f:
                 return yaml.safe_load(f)
         except Exception:
-            return self._load_translation("de")
+            return self._load_translation("en")
 
     def to_html(
         self,
@@ -209,27 +209,9 @@ class FastingCalendar:
             year = date.today().year
 
         if weekdays is None:
-            weekdays = translation.get(
-                "weekdays", ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
-            )
+            weekdays = translation.get("weekdays")
         if months is None:
-            months = translation.get(
-                "months",
-                [
-                    "Januar",
-                    "Februar",
-                    "Marz",
-                    "April",
-                    "Mai",
-                    "Juni",
-                    "Juli",
-                    "August",
-                    "September",
-                    "Oktober",
-                    "November",
-                    "Dezember",
-                ],
-            )
+            months = translation.get("months")
 
         fastdays = dict(self.get(year, old_style))
 
