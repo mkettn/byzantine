@@ -2,9 +2,14 @@ from datetime import date
 from byzantine.fastingcalendar import FastingCalendar
 
 
+import os
+
+TEST_CALENDAR = os.path.join(os.path.dirname(__file__), "test_calendar.yml")
+
+
 class TestFastingCalendarGet:
     def test_fixed_date(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         results = fc.get(2024)
         dates = [d for d, v in results]
 
@@ -12,7 +17,7 @@ class TestFastingCalendarGet:
         assert date(2024, 6, 15) in dates
 
     def test_weekday_rules(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         results = fc.get(2024)
         results_dict = dict(results)
 
@@ -25,7 +30,7 @@ class TestFastingCalendarGet:
         assert results_dict[fri_jan_12] == {"fri": "no_oil"}
 
     def test_no_fast_period(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         results = fc.get(2024)
         results_dict = dict(results)
 
@@ -36,14 +41,14 @@ class TestFastingCalendarGet:
 
 class TestFastingCalendarHtml:
     def test_html_output(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         html = fc.to_html(2024)
 
         assert "<table" in html
         assert "January" in html or "Januar" in html
 
     def test_html_with_lang(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         html = fc.to_html(2024, lang="en")
 
         assert "January" in html
@@ -51,7 +56,7 @@ class TestFastingCalendarHtml:
 
 class TestFastingCalendarMarkdown:
     def test_markdown_output(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         md = fc.to_markdown(2024)
 
         assert "|" in md
@@ -59,7 +64,7 @@ class TestFastingCalendarMarkdown:
         assert "End" in md
 
     def test_markdown_title(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         md = fc.to_markdown(2024, lang="en")
 
         assert "# Fasting calendar" in md
@@ -67,7 +72,7 @@ class TestFastingCalendarMarkdown:
 
 class TestFastingCalendarOldStyle:
     def test_old_style_offset(self):
-        fc = FastingCalendar("test_calendar.yml")
+        fc = FastingCalendar(TEST_CALENDAR)
         results = fc.get(2024, old_style=True)
         dates = [d for d, v in results]
 
