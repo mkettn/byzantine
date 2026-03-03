@@ -5,6 +5,7 @@ from byzantine.fastingcalendar import FastingCalendar
 import os
 
 TEST_CALENDAR = os.path.join(os.path.dirname(__file__), "test_calendar.yml")
+EMPTY_CALENDAR = os.path.join(os.path.dirname(__file__), "empty_calendar.yml")
 
 
 class TestFastingCalendarGet:
@@ -78,3 +79,21 @@ class TestFastingCalendarOldStyle:
 
         jan_14 = date(2024, 1, 14)
         assert jan_14 in dates
+
+
+class TestFastingCalendarEmpty:
+    def test_empty_get(self):
+        fc = FastingCalendar(EMPTY_CALENDAR)
+        results = fc.get(2024)
+        assert results == []
+
+    def test_empty_html_has_structure(self):
+        fc = FastingCalendar(EMPTY_CALENDAR)
+        html = fc.to_html(2024)
+        assert "<table" in html
+
+    def test_empty_markdown(self):
+        fc = FastingCalendar(EMPTY_CALENDAR)
+        md = fc.to_markdown(2024)
+        assert "#" in md
+        assert "Start" in md
