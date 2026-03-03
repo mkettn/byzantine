@@ -1,0 +1,19 @@
+# Test fasting calendar
+
+# Fixed feast days
+- "0101": New Year
+- "0615": Mid Year
+
+# Weekdays no oil (example period)
+- "0101..0115":
+    wed: no_oil
+    fri: no_oil
+
+# Test fast period
+- "0201..0214":
+    mon..fri: no_meat
+    sat..sun: no_dairy
+
+# No fasting week
+- "0301..0307":
+    mon..sun: no_fast
