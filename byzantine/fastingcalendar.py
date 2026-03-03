@@ -259,3 +259,91 @@ class FastingCalendar:
             html += "</div>"
 
         return html
+
+    def to_markdown(
+        self,
+        year: int | None = None,
+        old_style: bool = False,
+        lang: str = "en",
+    ) -> str:
+        """Generate markdown list of fasting periods.
+
+        Args:
+            year: Year to generate calendar for. Defaults to current year.
+            old_style: If True, use Julian calendar (13-day offset).
+            lang: Language code for translations.
+
+        Returns:
+            Markdown string with fasting periods.
+        """
+        from datetime import date
+
+        if year is None:
+            year = date.today().year
+
+        translation = self._load_translation(lang)
+
+        title = translation.get("title", "Fasting Calendar")
+        if old_style and len(translation.get("style", [])) > 0:
+            title += f" {translation['style'][0]}"
+        elif len(translation.get("style", [])) > 1:
+            title += f" {translation['style'][1]}"
+
+        results = self.get(year, old_style)
+
+        md = f"# {title}\n\n"
+        md += "| Start | End | Days | Rule |\n"
+        md += "|-------|-----|------|------|\n"
+
+        if not results:
+            return md
+
+        current_start = results[0][0]
+        current_rule = self._rule_to_str(results[0][1])
+        all_wdays = {results[0][0].weekday()}
+
+        for i in range(1, len(results)):
+            dt, rule = results[i]
+            rule_str = self._rule_to_str(rule)
+
+            if rule_str != current_rule:
+                days_str = self._weekdays_to_str(all_wdays)
+                md += f"| {current_start} | {results[i - 1][0]} | {days_str} | {current_rule} |\n"
+                current_start = dt
+                current_rule = rule_str
+                all_wdays = {dt.weekday()}
+            else:
+                all_wdays.add(dt.weekday())
+
+        days_str = self._weekdays_to_str(all_wdays)
+        md += f"| {current_start} | {results[-1][0]} | {days_str} | {current_rule} |\n"
+
+        return md
+
+    def _weekdays_to_str(self, wdays: set) -> str:
+        """Convert a set of weekday numbers to a string like 'Mon-Fri' or 'Wed, Fri'."""
+        if not wdays:
+            return ""
+
+        wday_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        sorted_days = sorted(wdays)
+
+        if sorted_days == [0, 1, 2, 3, 4, 5, 6]:
+            return "Mon-Sun"
+        if sorted_days == [0, 1, 2, 3, 4]:
+            return "Mon-Fri"
+        if sorted_days == [5, 6]:
+            return "Sat-Sun"
+
+        return ", ".join(wday_names[d] for d in sorted_days)
+
+        return md
+
+    def _rule_to_str(self, rule) -> str:
+        """Convert rule to string representation."""
+        if isinstance(rule, dict):
+            values = list(rule.values())
+            if "name" in rule:
+                return f"{rule.get('name', '')} ({rule.get('rule', values[0] if values else '')})"
+            return values[0] if values else ""
+        return str(rule) if rule else "no_fast"
