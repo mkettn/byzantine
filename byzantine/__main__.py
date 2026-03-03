@@ -2,14 +2,15 @@
 """Command-line tool to generate HTML fasting calendar from YAML config.
 
 Usage:
-    fasting-calendar [options] <yaml_file> 
+    fasting-calendar [options] <yaml_file>
     fasting-calendar -h | --help
 
 Options:
     -o <output>       Output HTML file (default: stdout)
     -y <year>         Year to generate calendar for (default: current year)
     --old-style       Use Julian calendar (13-day offset)
-    -t <title>        Calendar title [default: Fasting Calendar]
+    -t <title>        Calendar title
+    -l <lang>         Language code: en, de
     -h --help         Show this screen
 """
 
@@ -26,7 +27,8 @@ def main():
         html = fc.to_html(
             year=int(args["-y"]) if args["-y"] else None,
             old_style=args["--old-style"],
-            title=args["-t"],
+            title=args["-t"] if args["-t"] else None,
+            lang=args["-l"] if args["-l"] else "en",
         )
 
         if args["-o"]:
