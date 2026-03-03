@@ -107,5 +107,13 @@ class Day:
             ret = date(year, self._month, self._day)
         return ret
 
+    def is_easter_relative(self) -> bool:
+        """Check if this date is relative to Orthodox Easter.
+
+        Returns:
+            True if the date string starts with 'e', False otherwise.
+        """
+        return self._pascha
+
     def __str__(self):
         return f'{__class__.__name__}("{self._date}")'

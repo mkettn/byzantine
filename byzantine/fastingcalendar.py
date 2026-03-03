@@ -34,16 +34,10 @@ class FastingCalendar:
                     start = Day(start_str)
                     end = Day(end_str)
                     rules = value
-                    is_easter_relative = start_str.startswith(
-                        "e"
-                    ) or end_str.startswith("e")
-                    self._entries.append(
-                        ("range", start, end, rules, is_easter_relative)
-                    )
+                    self._entries.append(("range", start, end, rules))
                 else:
                     day = Day(date_spec)
-                    is_easter_relative = date_spec.startswith("e")
-                    self._entries.append(("fixed", day, value, is_easter_relative))
+                    self._entries.append(("fixed", day, value))
 
     def get(self, year: int | None = None, old_style: bool = False) -> list:
         """Get all fasting days for a given year.
@@ -72,9 +66,9 @@ class FastingCalendar:
             for entry in self._entries:
                 entry_type = entry[0]
                 if entry_type == "fixed":
-                    _, day, value, is_easter = entry
+                    _, day, value = entry
                     dt = day.get(yr)
-                    if not is_easter and old_style:
+                    if not day.is_easter_relative() and old_style:
                         dt += julian_offset
                     if dt.year == year:
                         if isinstance(value, dict) and "rule" in value:
@@ -82,10 +76,14 @@ class FastingCalendar:
                         else:
                             calendar[dt] = value
                 else:
-                    _, start, end, rules, is_easter = entry
+                    _, start, end, rules = entry
                     start_date = start.get(yr)
                     end_date = end.get(yr)
-                    if not is_easter and old_style:
+                    if (
+                        not start.is_easter_relative()
+                        and not end.is_easter_relative()
+                        and old_style
+                    ):
                         start_date += julian_offset
                         end_date += julian_offset
                     current = start_date
