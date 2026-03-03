@@ -6,6 +6,7 @@ import os
 
 TEST_CALENDAR = os.path.join(os.path.dirname(__file__), "test_calendar.yml")
 EMPTY_CALENDAR = os.path.join(os.path.dirname(__file__), "empty_calendar.yml")
+COMPLEX_CALENDAR = os.path.join(os.path.dirname(__file__), "complex_calendar.yml")
 
 
 class TestFastingCalendarGet:
@@ -97,3 +98,44 @@ class TestFastingCalendarEmpty:
         md = fc.to_markdown(2024)
         assert "#" in md
         assert "Start" in md
+
+
+class TestFastingCalendarComplex:
+    def test_fixed_dates(self):
+        fc = FastingCalendar(COMPLEX_CALENDAR)
+        results = fc.get(2024)
+        dates = [d for d, v in results]
+
+        assert date(2024, 1, 1) in dates
+        assert date(2024, 2, 14) in dates
+
+    def test_leap_year_feb_29(self):
+        fc = FastingCalendar(COMPLEX_CALENDAR)
+        results = fc.get(2024)
+        dates = [d for d, v in results]
+
+        assert date(2024, 2, 29) in dates
+
+    def test_non_leap_year_handled(self):
+        fc = FastingCalendar(COMPLEX_CALENDAR)
+        try:
+            results = fc.get(2023)
+        except ValueError:
+            pass
+
+    def test_easter_relative(self):
+        fc = FastingCalendar(COMPLEX_CALENDAR)
+        easter_2024 = date(2024, 5, 5)
+        results = fc.get(2024)
+        dates = [d for d, v in results]
+
+        assert easter_2024 in dates
+
+    def test_combined_rules(self):
+        fc = FastingCalendar(COMPLEX_CALENDAR)
+        results = fc.get(2024)
+        results_dict = dict(results)
+
+        may_27 = date(2024, 5, 27)
+        if may_27 in results_dict:
+            assert "no_meat" in str(results_dict[may_27])

@@ -1,0 +1,42 @@
+# Complex test calendar for edge cases
+
+# Fixed feast days
+- "0101": New Year
+- "0229": Leap Day (valid only in leap years)
+- "0214": Valentine
+- "0601": Summer Start
+
+# Easter-relative feast days
+- "e": Easter
+- "e+1d": Easter Monday
+- "e-2d": Good Friday
+- "e-7d": Palm Sunday
+
+# Leap year Feb 29 rules
+- "0228..0301":
+    wed: no_oil
+    fri: no_fish
+
+# Valentine's period
+- "0207..0214":
+    mon..fri: no_meat
+
+# Combined: fixed + weekday rules
+- "0525..0607":
+    mon: no_meat
+    wed: no_oil
+    fri: no_fish
+
+# Easter week (no fasting)
+- "e-1d..e+6d":
+    mon..sun: no_fast
+
+# Week before Easter (strict)
+- "e-8d..e-2d":
+    mon..fri: no_oil
+    sat..sun: no_fish
+
+# Period spanning year boundary (for old style testing)
+- "1215..0105":
+    mon..fri: no_meat
+    sat..sun: no_dairy
