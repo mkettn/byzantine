@@ -337,8 +337,6 @@ class FastingCalendar:
 
         return ", ".join(wday_names[d] for d in sorted_days)
 
-        return md
-
     def _rule_to_str(self, rule) -> str:
         """Convert rule to string representation."""
         if isinstance(rule, dict):
