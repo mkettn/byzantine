@@ -171,11 +171,10 @@ class FastingCalendar:
         title: str = "",
         weekdays: list | None = None,
         months: list | None = None,
-        inline_css: bool = True,
         show_legend: bool = True,
         lang: str = "en",
     ) -> str:
-        """Generate HTML calendar output.
+        """Generate HTML calendar tables.
 
         Args:
             year: Year to generate calendar for. Defaults to current year.
@@ -183,7 +182,6 @@ class FastingCalendar:
             title: Title for the calendar (overrides translation).
             weekdays: List of weekday abbreviations. Defaults to translation.
             months: List of month names. Defaults to translation.
-            inline_css: If True, embed CSS inline. If False, reference style.css.
             show_legend: If True, include legend showing color codes.
             lang: Language code for translations (e.g., "de", "en").
 
@@ -201,7 +199,6 @@ class FastingCalendar:
 
         from datetime import date, timedelta
         from calendar import monthrange
-        import importlib.resources
 
         if year is None:
             year = date.today().year
@@ -213,18 +210,7 @@ class FastingCalendar:
 
         fastdays = dict(self.get(year, old_style))
 
-        html = f"<!DOCTYPE html><html><head><title>{title}</title>"
-
-        if inline_css:
-            css_content = (
-                importlib.resources.files("byzantine.data")
-                .joinpath("style.css")
-                .read_text()
-            )
-            html += f"<style>{css_content}</style>"
-        else:
-            html += '<link rel="stylesheet" type="text/css" href="style.css"/></head>'
-        html += f'<body><h1>{title}</h1><div class="grid">'
+        html = f'<h1>{title}</h1><div class="grid">'
 
         for month in range(1, 13):
             first_day_of_month = date(year, month, 1)
@@ -287,5 +273,4 @@ class FastingCalendar:
                 )
             html += "</div>"
 
-        html += "</body></html>"
         return html

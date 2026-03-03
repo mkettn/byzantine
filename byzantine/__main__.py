@@ -15,6 +15,7 @@ Options:
 """
 
 import sys
+import importlib.resources
 from docopt import docopt
 from byzantine.fastingcalendar import FastingCalendar
 
@@ -24,12 +25,31 @@ def main():
 
     try:
         fc = FastingCalendar(args["<yaml_file>"])
-        html = fc.to_html(
+
+        # Get title for the HTML document
+        lang = args["-l"] if args["-l"] else "en"
+        translation = fc._load_translation(lang)
+        title = (
+            args["-t"] if args["-t"] else translation.get("title", "Fasting Calendar")
+        )
+
+        html_tables = fc.to_html(
             year=int(args["-y"]) if args["-y"] else None,
             old_style=args["--old-style"],
             title=args["-t"] if args["-t"] else None,
-            lang=args["-l"] if args["-l"] else "en",
+            lang=lang,
         )
+
+        # Build full HTML document
+        css_content = (
+            importlib.resources.files("byzantine.data")
+            .joinpath("style.css")
+            .read_text()
+        )
+
+        html = f"<!DOCTYPE html><html><head><title>{title}</title>"
+        html += f"<style>{css_content}</style>"
+        html += f"</head><body>{html_tables}</body></html>"
 
         if args["-o"]:
             with open(args["-o"], "w") as f:
