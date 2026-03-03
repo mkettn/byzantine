@@ -168,9 +168,6 @@ class FastingCalendar:
         self,
         year: int | None = None,
         old_style: bool = False,
-        title: str = "",
-        weekdays: list | None = None,
-        months: list | None = None,
         show_legend: bool = True,
         lang: str = "en",
     ) -> str:
@@ -179,9 +176,6 @@ class FastingCalendar:
         Args:
             year: Year to generate calendar for. Defaults to current year.
             old_style: If True, use Julian calendar (13-day offset).
-            title: Title for the calendar (overrides translation).
-            weekdays: List of weekday abbreviations. Defaults to translation.
-            months: List of month names. Defaults to translation.
             show_legend: If True, include legend showing color codes.
             lang: Language code for translations (e.g., "de", "en").
 
@@ -190,27 +184,18 @@ class FastingCalendar:
         """
         translation = self._load_translation(lang)
 
-        if not title:
-            title = translation.get("title", "Fasting Calendar")
-            if old_style and len(translation.get("style", [])) > 0:
-                title += f" {translation['style'][0]}"
-            elif len(translation.get("style", [])) > 1:
-                title += f" {translation['style'][1]}"
-
         from datetime import date, timedelta
         from calendar import monthrange
 
         if year is None:
             year = date.today().year
 
-        if weekdays is None:
-            weekdays = translation.get("weekdays")
-        if months is None:
-            months = translation.get("months")
+        weekdays = translation.get("weekdays")
+        months = translation.get("months")
 
         fastdays = dict(self.get(year, old_style))
 
-        html = f'<h1>{title}</h1><div class="grid">'
+        html = f'<div class="grid">'
 
         for month in range(1, 13):
             first_day_of_month = date(year, month, 1)

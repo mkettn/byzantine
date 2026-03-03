@@ -29,14 +29,19 @@ def main():
         # Get title for the HTML document
         lang = args["-l"] if args["-l"] else "en"
         translation = fc._load_translation(lang)
-        title = (
-            args["-t"] if args["-t"] else translation.get("title", "Fasting Calendar")
-        )
+
+        if args["-t"]:
+            title = args["-t"]
+        else:
+            title = translation.get("title", "Fasting Calendar")
+            if args["--old-style"] and len(translation.get("style", [])) > 0:
+                title += f" {translation['style'][0]}"
+            elif len(translation.get("style", [])) > 1:
+                title += f" {translation['style'][1]}"
 
         html_tables = fc.to_html(
             year=int(args["-y"]) if args["-y"] else None,
             old_style=args["--old-style"],
-            title=args["-t"] if args["-t"] else None,
             lang=lang,
         )
 
@@ -49,7 +54,7 @@ def main():
 
         html = f"<!DOCTYPE html><html><head><title>{title}</title>"
         html += f"<style>{css_content}</style>"
-        html += f"</head><body>{html_tables}</body></html>"
+        html += f"</head><body><h1>{title}</h1>{html_tables}</body></html>"
 
         if args["-o"]:
             with open(args["-o"], "w") as f:
